@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from mongoengine import *
 from forums.Algorithms import voteCount , hot , confidence
-import json
+import json , datetime
 
 class _BaseForUser():
 	'''
@@ -78,7 +78,7 @@ class Base(_BaseForUser):
 		Add a reply to a comment
 		'''
 		q = self.getById(qid)
-		c = self.comment(comment_text = comment)
+		c = self.comment(comment_text = comment , pub_date = datetime.datetime.now())
 		if self.comment.parent is not None:
 			setattr(c,self.comment.parent,q)
 		q.addComment(c)
@@ -112,6 +112,7 @@ class Base(_BaseForUser):
 		except Exception as e:
 			past = self.votes.create(user_id = vote.get("uid"))
 		past.vote = int(vote.get("vote"))
+		past.pub_date = datetime.datetime.now()
 		self.save()
 		if self.scorable:
 			self.calcScore()
