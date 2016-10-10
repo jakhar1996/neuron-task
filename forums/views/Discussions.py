@@ -16,6 +16,7 @@ import json,datetime
 class Redirect(View):
 	def dispatch(self,request,*args,**kwargs):
 		return redirect("/discussions/")
+
 class Index(View):
 	'''
 	Rendering the Forums index page
@@ -65,7 +66,9 @@ class PostView(LoginRequiredMixin ,generic.edit.FormView):
 			setattr(q,i,e)
 		try:
 			q.setURL()
-			print("URL ",q.url)
+			dup = Question.forUrl(q.url)
+			if dup is not None:
+				return HttpResponse(status = 400)
 			q.save()
 		except Exception as e:
 			print(e)
