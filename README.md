@@ -10,3 +10,4 @@
 9. View Profile while logged in 
 10. View Public Account of a user
 11. User Signup/Login/Password Reset through django-allauth
+12. Various Sortings for Posts/Comments based on algorithms used by Reddit
