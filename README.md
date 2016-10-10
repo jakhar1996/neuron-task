@@ -9,3 +9,4 @@
 8. Pagination for DB models
 9. View Profile while logged in 
 10. View Public Account of a user
+11. User Signup/Login/Password Reset through django-allauth
