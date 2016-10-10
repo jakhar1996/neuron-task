@@ -1,0 +1,53 @@
+{% extends "../base/base.html %}
+{% block title %}
+	Index
+{% endblock %}
+
+{% block content %}
+
+{% load humanize %}
+{% if question_list %}
+	<div class="ui raised segments">
+	  {% for question in question_list %}
+	  	<div class="ui segment">
+	    			<div class="ui huge header" id="topic-name"> <a href="{% url 'forums:thread' question.url %}">{{ question.question }}</a> </div>
+					<div class="ui items">
+						<div class="item" style="font-size:20px">
+							<span data-attr="vote" data-value="1" data-parent={{question.qid}} ><i class="fa fa-thumbs-o-up"></i></span>
+							&nbsp;&nbsp;&nbsp;
+							<span data-attr="vote" data-value="-1" data-parent={{question.qid}}><i class="fa fa-thumbs-o-down"></i></span>
+							&nbsp;&nbsp;&nbsp;
+							<span class="vote_count">{{question.voteCount}}</span>
+							<span> &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; </span>
+							<span> <i class="fa fa-comments-o"></i>  &nbsp;&nbsp; {{ question.comments | length }} </span>
+							<span> &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; </span>
+							<span> <i class="fa fa-clock-o"></i>  &nbsp;&nbsp; {{ question.pub_date | naturaltime }} </span>
+						</div>
+					</div>
+	  	</div>
+      {% endfor %}
+	</div>
+{% else %}
+    {% if user.comments|length > 0%}
+	<div class="ui raised very padded text container segment">
+		<h2 class="ui header">No Threads Available</h2>
+		<p></p>
+		<p></p>
+	</div>
+	{% endif %}
+{% endif %}
+{% endblock %}
+{% block footer %}
+<script type="text/javascript">
+$(document).on("click","[data-attr='vote']",function(){
+		$this = $(this);
+		var data = {
+			vote : $this.attr("data-value"),
+			qid : $this.attr("data-parent")
+		};
+		$.post("/discussions/vote", data, function(res) {
+		    $(this).siblings(".vote_count").text(res.voteCount)
+		});
+	});
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "../base/base.html" %}
+{% block content %}
+<div class="ui top attached tabular menu">
+  <a class="item active" data-tab="first">Posts ({{user.questions | length }})</a>
+  <a class="item" data-tab="second">Comments ({{user.comments | length }})</a>
+  <a class="item" data-tab="third">Inbox ({{user.inbox | length }})</a>
+  <a class="item" data-tab="fourth">Sentbox ({{user.sentbox | length }})</a>
+</div>
+<div class="ui bottom attached tab segment active" data-tab="first">
+	{% if user.questions|length > 0 %}
+  	{% for question in user.questions %}
+			  	<div class="ui segment">
+	    			<div class="ui huge header" id="topic-name"> <a href="{% url 'forums:thread' question.url %}">{{ question.question }}</a> </div>
+					<div class="ui items">
+						<div class="item">
+							<a href="#"><span data-attr="vote" data-value="1" data-parent={{question.qid}} ><i class="fa fa-thumbs-o-up"></i></span></a>
+							&nbsp;&nbsp;&nbsp;
+							<a href="#"><span data-attr="vote" data-value="-1" data-parent={{question.qid}}><i class="fa fa-thumbs-o-down"></i></span></a>
+							&nbsp;&nbsp;&nbsp;
+							{{question.voteCount}}
+							<span> &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; </span>
+							<span> <i class="fa fa-comments-o"></i>  &nbsp;&nbsp; {{question.comments | length }} </span>
+						</div>
+					</div>
+	  	</div>
+	{% endfor %}
+	{% else %}
+	<div class="ui raised very padded text container segment">
+		<h2 class="ui header">No Posts</h2>
+		<p></p>
+		<p></p>
+	</div>
+	{% endif %}
+</div>
+<div class="ui bottom attached tab segment" data-tab="second">
+	{% if user.comments|length > 0%}
+	<div class="ui comments">
+
+	  {% for comment in user.comments %}
+	    <div class="comment">
+	    <div class="content">
+	      <a class="author"><h3><a href="/discussions/{{comment.question_id.url}}">{{comment.question_id.question}}</a></h3></a>
+	      <div class="metadata">
+	        <!-- <span class="date">Today at 5:42PM</span> -->
+	      </div>
+	      <div class="text">
+	        {{comment.comment_text}}
+	      </div>
+	      <div class="actions">
+	        <!-- <a class="reply">Reply</a> -->
+	      </div>
+	    </div>
+	  </div>
+	  <div class="ui divider"></div>
+	  {% endfor %}
+	</div>
+	{% else %}
+	<div class="ui raised very padded text container segment">
+		<h2 class="ui header">No Comments</h2>
+		<p></p>
+		<p></p>
+	</div>
+	{% endif %}
+</div>
+<div class="ui bottom attached tab segment" data-tab="third">
+
+	{% if user.inbox|length > 0 %}
+	<div class="ui feed">
+	{% for message in user.inbox %}
+		<div class="event">
+			<div class="label">
+				<img src="/images/avatar/small/joe.jpg">
+			</div>
+			<div class="content">
+				<div class="summary">
+					<a> {{message.sender.username}} </a>
+					<div class="date">
+						{{message.time}}
+					</div>
+				</div>
+				<div class="extra text">
+					{{message.message}}
+				</div>
+
+			</div>
+		</div>
+	{% endfor  %}
+	</div>
+	{% else %}
+	<div class="ui raised very padded text container segment">
+		<h2 class="ui header">No Messages</h2>
+		<p></p>
+		<p></p>
+	</div>
+	{% endif %}
+</div>
+<div class="ui bottom attached tab segment" data-tab="fourth">
+	{% if user.sentbox|length > 0 %}
+	<div class="ui feed">
+	{% for message in user.sentbox %}
+		<div class="event">
+			<div class="label">
+				<img src="/images/avatar/small/joe.jpg">
+			</div>
+			<div class="content">
+				<div class="summary">
+					<a> {{message.receiver.username}} </a>
+					<div class="date">
+						{{message.time}}
+					</div>
+				</div>
+				<div class="extra text">
+					{{message.message}}
+				</div>
+
+			</div>
+		</div>
+	{% endfor  %}
+	</div>
+	{% else %}
+	<div class="ui raised very padded text container segment">
+		<h2 class="ui header">No Messages</h2>
+		<p></p>
+		<p></p>
+	</div>
+	{% endif %}
+</div>
+
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+	$('.menu .item')
+	    .tab();
+</script>
+{% endblock %}

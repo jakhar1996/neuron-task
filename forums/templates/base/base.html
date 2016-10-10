@@ -1,0 +1,80 @@
+<html>
+	<head>
+		{% block head %}
+		{% load static %}
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/icon.css">
+		<link rel="stylesheet" href="{% static 'css/semantic.min.css' %}">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+		<link rel="stylesheet" href="{% static 'css/main.css' %}">
+		<title>
+			{% block title %}
+			{% endblock %}
+			 - XSS
+		</title>
+		{% endblock %}
+	</head>
+	<body>
+<header class="pond-bg">
+        <div id="header-wrap">
+            <span>
+                <span class="ui huge header" id="site-name">                
+                <a href="/discussions/">Neuron Discussions </a>
+                <span class="ui label"> Alpha  </span>
+                <span class="label ui"><a href="/discussions/featured">Featured Discussions</a></span>
+                <span class="ui label"><a href="/discussions/latest">Latest Discussions</a></span>
+                <span class="ui label"><a href="/discussions/unanswered">Unanswered Discussions</a></span>
+            </span>
+            </span>
+{% if request.user.id %}
+
+	<span class="ui right floated floating labeled icon dropdown button">
+		<i class="icon user"></i>
+		<span class="text">Hello {{request.user.username}}</span>
+		<div class="menu">
+			<div class="divider"></div>
+			<div class="item">
+				<i class="attention icon"></i>
+				<a href="{% url 'profile' %}">Profile</a>
+			</div>
+			<div class="item">
+				<i class="comment icon"></i>
+				<a href="/accounts/logout">Logout</a>
+			</div>
+			<div class="item">
+				<i class="conversation icon"></i>
+				Discussion
+			</div>
+		</div>
+	</span>
+            {% else %}
+            <span>
+                <button id="login-button" class="ui right floated button" onclick="window.location.href='/accounts/login'"> Login  </button>
+                <button id="login-button" class="ui right floated button" onclick="window.location.href='/accounts/signup'"> Signup </button>
+            </span>
+            {% endif %}
+        </div>
+    </header>
+		<div class="container">
+			{% block content %}
+				
+			{% endblock %}
+		</div>
+		<footer>
+		<input type="hidden" id="csrf" value={{csrf_token}}>
+		<script src="http://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+		<script type="text/javascript" src="/static/js/semantic.min.js"></script>
+		<script type="text/javascript">
+			$.ajaxSetup({
+			    beforeSend: function(xhr, settings) {
+			        xhr.setRequestHeader("X-CSRFToken", $("#csrf").val());
+			    }
+			});
+			$(".ui.dropdown").dropdown();
+		</script>
+			{% block footer %}
+				
+			{% endblock %}
+		</footer>
+	</body>
+</html>

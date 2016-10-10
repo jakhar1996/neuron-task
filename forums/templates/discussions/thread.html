@@ -1,0 +1,120 @@
+{% extends "../base/base.html" %}
+{% load humanize %}
+{% block content %}
+<div class="row">
+	<div id="topic-intro">
+		<div class="ui huge header" id="topic-name"> {{question.question}} </div>
+		<div class="ui items">
+			<div class="item">
+				<a href="#"><span data-attr="vote" data-value="1" data-parent={{question.qid}} ><i class="fa fa-thumbs-o-up"></i></span></a>
+				&nbsp;&nbsp;&nbsp;
+				<a href="#"><span data-attr="vote" data-value="-1" data-parent={{question.qid}}><i class="fa fa-thumbs-o-down"></i></span></a>
+				&nbsp;&nbsp;&nbsp;
+				<span class="vote_count">{{question.voteCount}}</span>
+				&nbsp;&nbsp;&nbsp;
+				<i class="icon empty heart"></i>
+
+			</div>
+		</div>
+		<div id="topic-description" class="item"> 
+			<div class="content">
+				{{question.description}}
+				<br>
+				<br>
+			<div class="extra">
+        		Posted By <a href="{% url 'account' question.user.username %}">{{question.user.first_name}}</a>
+      		</div>
+      		<div class="metadata">
+      			{{question.pub_date | naturaltime }}
+      		</div>
+			</div>
+		</div>
+		<br>
+		<br>
+		<form class="ui reply form">
+			<div class="field">
+				<textarea name="comment" id="new_comment"></textarea>
+			</div>
+			<div class="ui primary submit labeled icon button" id="post_comment" data-parent={{question.id}}>
+				<i class="icon edit"></i> Add Comment
+			</div>
+		</form>
+		</div>
+</div>
+
+<div class="row">
+	
+<div id="topic-intro">
+	<div class="ui threaded comments">
+	  <h3 class="ui dividing header"> <i class="fa fa-comments-o"></i>&nbsp;&nbsp;{{question.comments | length }}  Comments</h3>
+	  {% for comment in question.comments %}
+	    <div class="comment">
+	    <div class="content">
+	      <a class="author">{{comment.user.first_name}}</a>
+	      <div class="metadata">
+	        <span class="date">{{comment.pub_date | naturaltime}}</span>
+	      </div>
+	      <div class="text">
+	        {{comment.comment_text}}
+	      </div>
+	      <div class="actions">
+	      	<a class="reply">Reply</a>
+	      </div>
+	    </div>
+		<div class="comments">
+			{% for reply in comment.comments %}
+				<div class="comment">
+					<div class="content">
+						<a class="author">{{reply.user.username}}</a>
+						<div class="metadata">
+							<span class="date">{{reply.pub_date | naturaltime }}</span>
+						</div>
+						<div class="text">
+							{{reply.comment_text}}
+						</div>
+						<div class="actions">
+							<a class="reply">Reply</a>
+						</div>
+					</div>
+				
+			{% endfor %}
+		</div>
+	  </div>
+	  <div class="ui divider"></div>
+	  {% endfor %}
+	</div>
+</div>
+</div>
+
+
+<input type="hidden" id="csrf" value={{csrf_token}}>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript">
+
+$(document).on("click","[data-attr='vote']",function(){
+	var data = {
+		vote : $(this).attr("data-value"),
+		qid : $(this).attr("data-parent")
+	};
+	console.log(data)
+	$.post("/discussions/vote", data , function(res){
+		console.log(res)
+		$(this).siblings(".vote_count").text(res.voteCount)
+	});
+});
+
+$(document).on("click" , "#post_comment" , function(){
+	var data = {
+		qid : $(this).attr("data-parent"),
+		comment : $("#new_comment").val()
+	};
+	$.post("/discussions/comment",data,function(res){
+		console.log(arguments);
+	})
+});
+
+</script>
+{% endblock %}
+
